@@ -78,11 +78,11 @@ WSGI_APPLICATION = 'Backend_Tourismo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
+        'NAME': 'tourismo',
         'USER': 'postgres',
-        'PASSWORD': 'rJ2FsyNVsWnluYCzfGa0',
-        'HOST': 'containers-us-west-180.railway.app',
-        'PORT': '7626',
+        'PASSWORD': 'hodhaifa2002',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
