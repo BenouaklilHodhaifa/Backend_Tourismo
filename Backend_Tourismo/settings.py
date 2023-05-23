@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
     'main',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,14 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware', because DRF do not use csrf authentication (i have to implemente a token based authentication insted)
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -72,18 +72,29 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Backend_Tourismo.wsgi.application'
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES':[
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
+
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'rJ2FsyNVsWnluYCzfGa0',
-        'HOST': 'containers-us-west-180.railway.app',
-        'PORT': '7626',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'railway',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'rJ2FsyNVsWnluYCzfGa0',
+    #     'HOST': 'containers-us-west-180.railway.app',
+    #     'PORT': '7626',
+    # }
 }
 
 
