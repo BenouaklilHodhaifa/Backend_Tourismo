@@ -17,6 +17,19 @@ class UserAccountManager(BaseUserManager):
         user.save()
 
         return user
+    
+    def create_superuser(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('superuser must have an email adresse')
+
+        email = self.normalize_email(email)
+        superuser = self.model(email=email, **extra_fields)
+        superuser.set_password(password)
+        superuser.is_superuser = True
+        superuser.is_staff = True
+        superuser.save()
+
+        return superuser
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin): 
@@ -39,3 +52,45 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     
     def __str__(self):
         return self.email
+
+
+class GeoInfo(models.Model): 
+        wilaya = models.CharField( max_length=50)
+        ville = models.CharField( max_length=50)
+        region = models.CharField(max_length=50)
+
+class TouristicPlace(models.Model): 
+    x= [ # add the rest
+        ("beach", "beach"), 
+        ("museum", "museum"), 
+        ("monument", "monument")
+    ]
+
+    name = models.CharField(max_length=60)
+    lat = models.FloatField()
+    long = models.FloatField()
+    description = models.TextField()
+    category = models.CharField( max_length=30, choices=x)
+    nb_visitors =models.IntegerField(default=0) # for statistics
+    created_by = models.ForeignKey(UserAccount, related_name="TouristicPlaces", on_delete=models.SET_NULL, null=True)
+    geoinfo = models.ForeignKey(GeoInfo ,on_delete=models.CASCADE, null=True)
+
+class comment(models.Model): 
+    name = models.CharField(max_length=50)
+    content = models.TextField()
+    approved = models.BooleanField(default=False)
+    rating = models.IntegerField()
+    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
+
+
+class Photo(models.Model): 
+    image = models.FileField(upload_to="multimedia", null=True, blank=True)
+    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
+
+class Video(models.Model): 
+    video = models.FileField(upload_to="multimedia", null=True, blank=True)
+    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
+
+
+
+    
