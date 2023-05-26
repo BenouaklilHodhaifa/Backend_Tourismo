@@ -1,6 +1,9 @@
 from datetime import timedelta
 
 from pathlib import Path
+import os 
+
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -15,7 +18,7 @@ SECRET_KEY = 'django-insecure-sflfyy@(+63i16m0q()k$xj92le4n)+e^r#p_-hz=_m)mnx(r=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -73,19 +76,23 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+#     # 'default': {
+#     #     'ENGINE': 'django.db.backends.postgresql',
+#     #     'NAME': 'railway',
+#     #     'USER': 'postgres',
+#     #     'PASSWORD': 'rJ2FsyNVsWnluYCzfGa0',
+#     #     'HOST': 'containers-us-west-180.railway.app',
+#     #     'PORT': '7626',
+#     # }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'railway',
-    #     'USER': 'postgres',
-    #     'PASSWORD': 'rJ2FsyNVsWnluYCzfGa0',
-    #     'HOST': 'containers-us-west-180.railway.app',
-    #     'PORT': '7626',
-    # }
+    'default': dj_database_url.parse("postgres://tourismo_user:pmUK9eW2Z1X2p1pJTyfqNW2O48gsaScl@dpg-chofq4e4dad61d805su0-a.frankfurt-postgres.render.com/tourismo")
 }
 
 
