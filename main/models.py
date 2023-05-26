@@ -75,21 +75,21 @@ class TouristicPlace(models.Model):
     created_by = models.ForeignKey(UserAccount, related_name="TouristicPlaces", on_delete=models.SET_NULL, null=True)
     geoinfo = models.ForeignKey(GeoInfo ,on_delete=models.CASCADE, null=True)
 
-class comment(models.Model): 
+class Comment(models.Model): 
     name = models.CharField(max_length=50)
     content = models.TextField()
     approved = models.BooleanField(default=False)
     rating = models.IntegerField()
-    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
+    touristicplace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
 
 
 class Photo(models.Model): 
     image = models.FileField(upload_to="multimedia", null=True, blank=True)
-    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
+    touristicplace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
 
 class Video(models.Model): 
     video = models.FileField(upload_to="multimedia", null=True, blank=True)
-    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
+    touristicplace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
 
 
 
