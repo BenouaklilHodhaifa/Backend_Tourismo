@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Drink, TouristicPlace, GeoInfo, Photo
+from .models import Drink, TouristicPlace, GeoInfo, Photo, Comment
 
 # for authentication 
 from djoser.serializers import UserCreateSerializer
@@ -36,6 +36,11 @@ class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
         fields = ['id', 'image', 'touristicPlace']
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'name', 'content', 'approved', 'rating', 'touristicPlace']
 
 
         

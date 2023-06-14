@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from .models import Drink
-from .serializers import DrinkSerializer, TouristicPlaceSerializer, GeoInfoSerializer, PhotoSerializer
+from .serializers import DrinkSerializer, TouristicPlaceSerializer, GeoInfoSerializer, PhotoSerializer, CommentSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -103,7 +103,49 @@ def TouristicPlaceDetailsView(request, id):
         touristicPlace.delete()
         return Response(status= status.HTTP_204_NO_CONTENT)
 
+@api_view(['POST', 'GET'])
+
+def CommentsView(request): 
+    if request.method == 'GET':
+        comments = Comment.objects.all()
+        serializer = CommentSerializer(comments, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    if request.method == 'POST': 
+        serializer = CommentSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status= status.HTTP_201_CREATED)
+            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET','PUT','DELETE'])
+
+def CommentsDetailsView(request, id):
+    try:
+        comment = Comment.objects.get(pk=id)        
+    except Comment.DoesNotExist: 
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = CommentSerializer(comment)
         
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    elif request.method == 'PUT': 
+        serializer = CommentSerializer(comment, data=request.data)
+        if serializer.is_valid(): 
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE': 
+        comment.delete()
+        return Response(status= status.HTTP_204_NO_CONTENT)     
 
 
 @api_view(['GET','POST'])
@@ -143,6 +185,3 @@ class PhotoViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save()
-
-
-

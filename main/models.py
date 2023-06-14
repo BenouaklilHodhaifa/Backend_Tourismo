@@ -82,7 +82,7 @@ class TouristicPlace(models.Model):
     created_by = models.ForeignKey(UserAccount, related_name="TouristicPlaces", on_delete=models.SET_NULL, null=True)
     geoinfo = models.ForeignKey(GeoInfo ,on_delete=models.CASCADE, null=True)
 
-class comment(models.Model): 
+class Comment(models.Model): 
     name = models.CharField(max_length=50)
     content = models.TextField()
     approved = models.BooleanField(default=False)
@@ -92,7 +92,7 @@ class comment(models.Model):
 def upload_to(instance, filename):
     return 'images/{filename}'.format(filename=filename)
 
-class Photo(models.Model): 
+class Photo(models.Model):
     image = models.FileField(upload_to="multimedia", null=True, blank=True)
     touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE, null=True)
 
