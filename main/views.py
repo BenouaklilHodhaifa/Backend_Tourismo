@@ -1,11 +1,16 @@
 from django.http import JsonResponse
 from .models import Drink
-from .serializers import DrinkSerializer
+from .serializers import DrinkSerializer, TouristicPlaceSerializer, GeoInfoSerializer, PhotoSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-
-
+from .models import *
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.generics import ListAPIView
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.parsers import MultiPartParser, FormParser
+#from rest_framework import permissions
 
 @api_view(['GET','POST'])
 def DrinkList(request): 
@@ -50,3 +55,63 @@ def DrinkDetails(request, id):
     elif request.method == 'DELETE': 
         drink.delete()
         return Response(status= status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET','POST'])
+# @permissions_classes([IsAuthenticated])
+def TouristicPlacesView(request):
+    if request.method == 'GET':
+        touristicPlaces = TouristicPlace.objects.all()
+        serializer = TouristicPlaceSerializer(touristicPlaces, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)       
+
+    if request.method == 'POST':
+        serializer = TouristicPlaceSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status= status.HTTP_201_CREATED)
+            
+        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET','POST'])
+#@permission_classes((IsAuthenticated, ))
+def GeoInfoView(request):
+    if request.method == 'GET':
+        geoInfo = GeoInfo.objects.all()
+        serializer = GeoInfoSerializer(geoInfo, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)       
+
+    if request.method == 'POST':
+        serializer = GeoInfoSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status= status.HTTP_201_CREATED)
+            
+        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+
+class TouristicPlacesFitler(ListAPIView):
+    queryset = TouristicPlace.objects.all()
+    serializer_class = TouristicPlaceSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    ordering_fields = ['category', 'geoinfo__wilaya', 'geoinfo__ville', 'geoinfo__region'] 
+    filters_fields = ['category', 'geoinfo__wilaya', 'geoinfo__ville', 'geoinfo__region']
+    search_fields = ['category', 'geoinfo__wilaya', 'geoinfo__ville', 'geoinfo__region']
+    #serializer = TouristicPlaceSerializer(queryset, many=True)
+    #return JsonResponse(serializer.data, safe=False)
+
+class PhotoViewSet(ModelViewSet):
+    queryset = Photo.objects.all()
+    serializer_class = PhotoSerializer
+    parser_classes = (MultiPartParser, FormParser)
+    # permission_classes = [
+    #     permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+
+

@@ -82,6 +82,8 @@ class comment(models.Model):
     rating = models.IntegerField()
     touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
 
+def upload_to(instance, filename):
+    return 'images/{filename}'.format(filename=filename)
 
 class Photo(models.Model): 
     image = models.FileField(upload_to="multimedia", null=True, blank=True)

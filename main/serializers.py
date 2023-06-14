@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Drink
+from .models import Drink, TouristicPlace, GeoInfo, Photo
 
 # for authentication 
 from djoser.serializers import UserCreateSerializer
@@ -20,3 +20,22 @@ class DrinkSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Drink 
         fields = ['id', 'name', 'description']
+
+class TouristicPlaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TouristicPlace
+        fields = ['id', 'name', 'lat', 'long', 'description', 'category', 'nb_visitors', 'created_by', 'geoinfo']
+        #fields = ['name', 'lat', 'long', 'description', 'nb_visitors']
+
+class GeoInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GeoInfo
+        fields = ['id', 'wilaya', 'ville', 'region']
+
+class PhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Photo
+        fields = ['id', 'image', 'touristicPlace']
+
+
+        
