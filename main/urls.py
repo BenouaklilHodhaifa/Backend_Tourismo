@@ -6,5 +6,6 @@ urlpatterns = [
     path('geoinfo/', views.GeoInfoView),
     path('places/filter/', views.TouristicPlacesFitler.as_view()),
     path('places/photo/', views.PhotoViewSet.as_view({'post': 'create'})),
+    path('places/<int:id>/', views.TouristicPlaceDetailsView)
 ]
 

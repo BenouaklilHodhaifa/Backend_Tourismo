@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager #for the costum user model
+from django.core.validators import MinValueValidator, MaxValueValidator # to validate the attribute "region" in "UserAccount" model
 
 
 class Drink(models.Model): # this is just a test
@@ -38,6 +39,12 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    region = models.IntegerField( # every wilaya is a region
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(58)
+        ], null=True
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name']
@@ -63,7 +70,7 @@ class TouristicPlace(models.Model):
     x= [ # add the rest
         ("beach", "beach"), 
         ("museum", "museum"), 
-        ("monument", "monument")
+        ("monumant", "monumant")
     ]
 
     name = models.CharField(max_length=60)
@@ -80,18 +87,18 @@ class comment(models.Model):
     content = models.TextField()
     approved = models.BooleanField(default=False)
     rating = models.IntegerField()
-    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
+    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE, null=True)
 
 def upload_to(instance, filename):
     return 'images/{filename}'.format(filename=filename)
 
 class Photo(models.Model): 
     image = models.FileField(upload_to="multimedia", null=True, blank=True)
-    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
+    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE, null=True)
 
 class Video(models.Model): 
     video = models.FileField(upload_to="multimedia", null=True, blank=True)
-    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
+    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE, null=True)
 
 
 
