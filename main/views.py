@@ -86,8 +86,9 @@ def TouristicPlaceDetailsView(request, id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = TouristicPlaceSerializer(touristicPlace)
         touristicPlace.nb_visitors += 1 # nb_vistors++ for stats
+        serializer = TouristicPlaceSerializer(touristicPlace)
+        serializer.save()
         
         return Response(serializer.data, status=status.HTTP_200_OK)
     
