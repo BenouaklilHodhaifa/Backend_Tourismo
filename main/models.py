@@ -82,6 +82,7 @@ class TouristicPlace(models.Model):
     created_by = models.ForeignKey(UserAccount, related_name="TouristicPlaces", on_delete=models.SET_NULL, null=True)
     geoinfo = models.ForeignKey(GeoInfo ,on_delete=models.CASCADE, null=True)
 
+
 class Comment(models.Model): 
     name = models.CharField(max_length=50)
     content = models.TextField()
