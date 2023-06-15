@@ -8,6 +8,8 @@ urlpatterns = [
     path('places/photo/', views.PhotoViewSet.as_view({'post': 'create'})),
     path('places/<int:id>/', views.TouristicPlaceDetailsView), 
     path('comments/', views.CommentsView), 
-    path('comments/<int:id>/', views.CommentsDetailsView)
+    path('comments/<int:id>/', views.CommentsDetailsView), 
+    path('centraladmins/', views.SuperUserView), 
+    path('centraladmins/<int:id>/', views.SuperUserDetailsView)
 ]
 

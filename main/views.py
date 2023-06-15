@@ -1,6 +1,5 @@
-from django.http import JsonResponse
 from .models import Drink
-from .serializers import DrinkSerializer, TouristicPlaceSerializer, GeoInfoSerializer, PhotoSerializer, CommentSerializer
+from .serializers import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -185,3 +184,47 @@ class PhotoViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save()
+
+
+
+@api_view(['GET', 'POST'])
+def SuperUserView(request):
+    if request.method == 'GET': 
+        users = UserAccount.objects.all()
+        serializer = UserAccountSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    elif request.method == 'POST': 
+        serializer = UserCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(is_superuser=True)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def SuperUserDetailsView(request, id): 
+
+    try:
+        superuser = UserAccount.objects.get(pk=id)        
+    except UserAccount.DoesNotExist: 
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET': 
+        serializer = UserAccountSerializer(superuser)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    elif request.method == 'PUT': 
+        serializer = UserAccountSerializer(superuser, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'DELETE': 
+        "Delete any admin"
+        user = UserAccount.objects.get(pk=id) 
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    

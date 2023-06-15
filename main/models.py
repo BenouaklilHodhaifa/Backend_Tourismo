@@ -8,29 +8,17 @@ class Drink(models.Model): # this is just a test
     description = models.TextField()
 
 class UserAccountManager(BaseUserManager): 
-    def create_user(self, email, name, password=None): 
+    def create_user(self, email, name, password=None, is_superuser=False): 
         if not email:
             raise ValueError('user must have an email address')
 
         email = self.normalize_email(email)
         user = self.model(email=email, name=name)
-        user.set_password(password) #hash the password 
+        user.set_password(password) #hash the password
+        user.is_superuser = is_superuser 
         user.save()
 
         return user
-    
-    def create_superuser(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('superuser must have an email adresse')
-
-        email = self.normalize_email(email)
-        superuser = self.model(email=email, **extra_fields)
-        superuser.set_password(password)
-        superuser.is_superuser = True
-        superuser.is_staff = True
-        superuser.save()
-
-        return superuser
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin): 
@@ -39,12 +27,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    region = models.IntegerField( # every wilaya is a region
-        validators=[
-            MinValueValidator(1),
-            MaxValueValidator(58)
-        ], null=True
-    )
+    region = models.CharField(max_length=50, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name']
