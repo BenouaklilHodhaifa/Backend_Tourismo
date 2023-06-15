@@ -229,4 +229,18 @@ def SuperUserDetailsView(request, id):
         user = UserAccount.objects.get(pk=id) 
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def StatisicsView(request, id): 
+    """GET the statistics about a specific Touristic Place
+    (visitors number and the average appreciation given by users)"""
+    try:
+        touristicPlace = TouristicPlace.objects.get(pk=id)        
+    except TouristicPlace.DoesNotExist: 
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    comments = touristicPlace.comment_set.all()
+    # this isn't finished yet
+
+
     
