@@ -104,7 +104,7 @@ REST_FRAMEWORK = {
 # }
 
 DATABASES = {
-    'default': dj_database_url.parse("postgres://tourismo_user:pmUK9eW2Z1X2p1pJTyfqNW2O48gsaScl@dpg-chofq4e4dad61d805su0-a.frankfurt-postgres.render.com/tourismo")
+    'default': dj_database_url.parse("postgres://tourismo_hg7r_user:QGyO53NvwvKesVyPdPtNQEqEQyMAQckM@dpg-ci5h58lph6eh6mrlh3l0-a.frankfurt-postgres.render.com/tourismo_hg7r")
 }
 
 
