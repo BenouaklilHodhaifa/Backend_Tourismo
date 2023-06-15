@@ -50,10 +50,17 @@ class GeoInfo(models.Model):
         region = models.CharField(max_length=50)
 
 class TouristicPlace(models.Model): 
-    x= [ # add the rest
+    x= [ 
         ("beach", "beach"), 
         ("museum", "museum"), 
-        ("monumant", "monumant")
+        ("monumant", "monumant"), 
+        ("landmark", "landmark"), 
+        ("public square", "public square"), 
+        ("archaeological site", "archaeological site"), 
+        ("garden", "garden"), 
+        ("relegious site", "relegious site"), 
+        ("market", "market"), 
+        ("restaurant", "restaurant")
     ]
 
     name = models.CharField(max_length=60)
