@@ -102,11 +102,11 @@ REST_FRAMEWORK = {
 #     #     'PASSWORD': 'rJ2FsyNVsWnluYCzfGa0',
 #     #     'HOST': 'containers-us-west-180.railway.app',
 #     #     'PORT': '7626',
-#     # }
-# }
+#     }
+#  }
 
 DATABASES = {
-    'default': dj_database_url.parse("postgres://tourismo_hg7r_user:QGyO53NvwvKesVyPdPtNQEqEQyMAQckM@dpg-ci5h58lph6eh6mrlh3l0-a.frankfurt-postgres.render.com/tourismo_hg7r")
+    'default': dj_database_url.parse("postgres://tourismo_kqkq_user:gtcazaB93q0AhYK6NvHxM2oXJaSK0CeC@dpg-ci6almp8g3n4q9p3rn30-a.frankfurt-postgres.render.com/tourismo_kqkq")
 }
 
 

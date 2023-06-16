@@ -3,7 +3,6 @@ from . import views
 
 urlpatterns = [
     path('places/', views.TouristicPlacesView),
-    path('places/event/', views.createEvent),
     path('geoinfo/', views.GeoInfoView),
     path('geoinfo/<int:id>/', views.GeoInfoDetailsView),
     path('places/filter/', views.TouristicPlacesFitler.as_view()),

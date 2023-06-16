@@ -32,22 +32,13 @@ class GeoInfoSerializer(serializers.ModelSerializer):
         fields = ['id', 'wilaya', 'ville', 'region']
 
 
+
 class TouristicPlaceSerializer(serializers.ModelSerializer):
     class Meta: 
         model =  TouristicPlace
-        fields = ['id','name', 'lat', 'long', 'description', 'category', 'nb_visitors', 'created_by', 'geoinfo']
+        fields = ['id','name', 'lat', 'long', 'description', 'category', 'nb_visitors', 'date_debut', 'date_fin', 'created_by', 'geoinfo']
         
-        # def to_representation(self, instance): # if the instance is an "Event" then add "date_debut" and "date_fin"
-        #     if isinstance(instance, Event):
-        #         return EventSerializer(instance).data
-        #     return super().to_representation(instance)
 
-
-class EventSerializer(serializers.ModelSerializer):
-    class Meta: 
-        model =  Event
-        # fields = ['id','name', 'lat', 'long', 'description','category', 'nb_visitors', 'created_by', 'geoinfo', 'date_debut', 'date_fin']
-        fields = TouristicPlaceSerializer.Meta.fields + ['date_debut', 'date_fin']
 
 
 class CommentSerializer(serializers.ModelSerializer): 

@@ -105,16 +105,7 @@ def TouristicPlaceDetailsView(request, id):
     elif request.method == 'DELETE': 
         touristicPlace.delete()
         return Response(status= status.HTTP_204_NO_CONTENT)
-
-@api_view(['POST'])
-def createEvent(request): 
-    serializer = EventSerializer(data=request.data)
-    print(request.data)
-    if serializer.is_valid():
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+    
 
 @api_view(['POST', 'GET'])
 def CommentsView(request): 
