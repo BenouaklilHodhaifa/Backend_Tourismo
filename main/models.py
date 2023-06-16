@@ -45,10 +45,6 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
-class GeoInfo(models.Model): 
-        wilaya = models.CharField( max_length=50)
-        ville = models.CharField( max_length=50)
-        region = models.CharField(max_length=50)
 
 class TouristicPlace(models.Model): 
     x= [ 
@@ -75,7 +71,9 @@ class TouristicPlace(models.Model):
     date_debut = models.DateField(null=True)
     date_fin = models.DateField(null=True) #for the events
     created_by = models.ForeignKey(UserAccount, related_name="TouristicPlaces", on_delete=models.SET_NULL, null=True)
-    geoinfo = models.ForeignKey(GeoInfo ,on_delete=models.CASCADE, null=True)
+    region = models.CharField(max_length=50, null=True)
+    wilaya = models.CharField( max_length=50, null=True)
+    ville = models.CharField( max_length=50, null=True)
 
 
 
@@ -98,6 +96,8 @@ class Video(models.Model):
     video = models.FileField(upload_to="multimedia", null=True, blank=True)
     touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE, null=True)
 
+
+#class Subscriber(models.Model)
 
 
     

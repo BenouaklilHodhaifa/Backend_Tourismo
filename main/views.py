@@ -184,47 +184,47 @@ def getAllNonApprovedComments(request):
     
 
 
-@api_view(['GET','POST'])
-#@permission_classes((IsAuthenticated, ))
-def GeoInfoView(request):
-    if request.method == 'GET':
-        geoInfo = GeoInfo.objects.all()
-        serializer = GeoInfoSerializer(geoInfo, many=True)
+# @api_view(['GET','POST'])
+# #@permission_classes((IsAuthenticated, ))
+# def GeoInfoView(request):
+#     if request.method == 'GET':
+#         geoInfo = GeoInfo.objects.all()
+#         serializer = GeoInfoSerializer(geoInfo, many=True)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)       
+#         return Response(serializer.data, status=status.HTTP_200_OK)       
 
-    if request.method == 'POST':
-        serializer = GeoInfoSerializer(data=request.data)
+#     if request.method == 'POST':
+#         serializer = GeoInfoSerializer(data=request.data)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status= status.HTTP_201_CREATED)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status= status.HTTP_201_CREATED)
             
-        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def GeoInfoDetailsView(request, id): 
-    try: 
-        geoinfo = GeoInfo.objects.get(pk=id)
-    except GeoInfo.DoesNotExist: 
-        return Response(status=status.HTTP_404_NOT_FOUND)
+# @api_view(['GET', 'PUT', 'DELETE'])
+# def GeoInfoDetailsView(request, id): 
+#     try: 
+#         geoinfo = GeoInfo.objects.get(pk=id)
+#     except GeoInfo.DoesNotExist: 
+#         return Response(status=status.HTTP_404_NOT_FOUND)
     
-    if request.method == 'GET':
-        serializer = GeoInfoSerializer(geoinfo)
+#     if request.method == 'GET':
+#         serializer = GeoInfoSerializer(geoinfo)
         
-        return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    elif request.method == 'PUT': 
-        serializer = GeoInfoSerializer(geoinfo, data=request.data)
-        if serializer.is_valid(): 
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+#     elif request.method == 'PUT': 
+#         serializer = GeoInfoSerializer(geoinfo, data=request.data)
+#         if serializer.is_valid(): 
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE': 
-        geoinfo.delete()
-        return Response(status= status.HTTP_204_NO_CONTENT)
+#     elif request.method == 'DELETE': 
+#         geoinfo.delete()
+#         return Response(status= status.HTTP_204_NO_CONTENT)
 
 
 class TouristicPlacesFitler(ListAPIView):

@@ -26,17 +26,17 @@ class DrinkSerializer(serializers.ModelSerializer):
         model = Drink 
         fields = ['id', 'name', 'description']
     
-class GeoInfoSerializer(serializers.ModelSerializer):
-    class Meta: 
-        model =  GeoInfo
-        fields = ['id', 'wilaya', 'ville', 'region']
+# class GeoInfoSerializer(serializers.ModelSerializer):
+#     class Meta: 
+#         model =  GeoInfo
+#         fields = ['id', 'wilaya', 'ville', 'region']
 
 
 
 class TouristicPlaceSerializer(serializers.ModelSerializer):
     class Meta: 
         model =  TouristicPlace
-        fields = ['id','name', 'lat', 'long', 'description', 'category', 'nb_visitors', 'date_debut', 'date_fin', 'created_by', 'geoinfo']
+        fields = ['id','name', 'lat', 'long', 'description', 'category', 'nb_visitors', 'date_debut', 'date_fin', 'created_by', 'wilaya', 'ville', 'region']
         
 
 
