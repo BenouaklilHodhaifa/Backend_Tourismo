@@ -30,7 +30,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     region = models.CharField(max_length=50, null=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name']
+    REQUIRED_FIELDS = ['name', 'is_superuser']
 
     objects = UserAccountManager()
 
