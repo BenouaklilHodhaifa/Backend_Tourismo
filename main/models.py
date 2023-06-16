@@ -72,8 +72,8 @@ class TouristicPlace(models.Model):
     description = models.TextField()
     category = models.CharField( max_length=30, choices=x)
     nb_visitors =models.IntegerField(default=0) # for statistics
-    date_debut = models.DateField(default=None)
-    date_fin = models.DateField(default=None) #for the events
+    date_debut = models.DateField(null=True)
+    date_fin = models.DateField(null=True) #for the events
     created_by = models.ForeignKey(UserAccount, related_name="TouristicPlaces", on_delete=models.SET_NULL, null=True)
     geoinfo = models.ForeignKey(GeoInfo ,on_delete=models.CASCADE, null=True)
 
