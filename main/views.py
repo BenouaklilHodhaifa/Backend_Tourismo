@@ -106,8 +106,17 @@ def TouristicPlaceDetailsView(request, id):
         touristicPlace.delete()
         return Response(status= status.HTTP_204_NO_CONTENT)
 
-@api_view(['POST', 'GET'])
+@api_view(['POST'])
+def createEvent(request): 
+    serializer = EventSerializer(data=request.data)
+    print(request.data)
+    if serializer.is_valid():
+        serializer.save()
 
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST', 'GET'])
 def CommentsView(request): 
     if request.method == 'GET':
         comments = Comment.objects.all()
@@ -201,6 +210,31 @@ def GeoInfoView(request):
             return Response(serializer.data, status= status.HTTP_201_CREATED)
             
         return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def GeoInfoDetailsView(request, id): 
+    try: 
+        geoinfo = GeoInfo.objects.get(pk=id)
+    except GeoInfo.DoesNotExist: 
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = GeoInfoSerializer(geoinfo)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    elif request.method == 'PUT': 
+        serializer = GeoInfoSerializer(geoinfo, data=request.data)
+        if serializer.is_valid(): 
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE': 
+        geoinfo.delete()
+        return Response(status= status.HTTP_204_NO_CONTENT)
+
 
 class TouristicPlacesFitler(ListAPIView):
     queryset = TouristicPlace.objects.all()
@@ -297,3 +331,4 @@ def send_newsletter(request):
     recipient_list = ['ka_seddiki@esi.dz']
     send_newsletter_email(subject, message, recipient_list)
     return Response('Newsletter sent!', status=200)
+

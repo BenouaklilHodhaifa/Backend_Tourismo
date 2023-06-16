@@ -8,14 +8,15 @@ class Drink(models.Model): # this is just a test
     description = models.TextField()
 
 class UserAccountManager(BaseUserManager): 
-    def create_user(self, email, name, password=None, is_superuser=False): 
+    def create_user(self, email, name, password=None, is_superuser=False, region=None): 
         if not email:
             raise ValueError('user must have an email address')
 
         email = self.normalize_email(email)
         user = self.model(email=email, name=name)
         user.set_password(password) #hash the password
-        user.is_superuser = is_superuser 
+        user.is_superuser = is_superuser
+        user.region = region 
         user.save()
 
         return user
@@ -30,7 +31,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     region = models.CharField(max_length=50, null=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name', 'is_superuser']
+    REQUIRED_FIELDS = ['name', 'is_superuser', 'region']
 
     objects = UserAccountManager()
 
@@ -60,7 +61,8 @@ class TouristicPlace(models.Model):
         ("garden", "garden"), 
         ("relegious site", "relegious site"), 
         ("market", "market"), 
-        ("restaurant", "restaurant")
+        ("restaurant", "restaurant"), 
+        ("event", "event")
     ]
 
     name = models.CharField(max_length=60)
@@ -71,6 +73,11 @@ class TouristicPlace(models.Model):
     nb_visitors =models.IntegerField(default=0) # for statistics
     created_by = models.ForeignKey(UserAccount, related_name="TouristicPlaces", on_delete=models.SET_NULL, null=True)
     geoinfo = models.ForeignKey(GeoInfo ,on_delete=models.CASCADE, null=True)
+
+class Event(TouristicPlace): 
+    category = "event"
+    date_debut = models.DateField()
+    date_fin = models.DateField()
 
 
 class Comment(models.Model): 

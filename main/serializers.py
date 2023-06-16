@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Drink, TouristicPlace, GeoInfo, Photo, Comment, Video
+from .models import *
 
 # for authentication 
 from djoser.serializers import UserCreateSerializer
@@ -10,7 +10,7 @@ user = get_user_model()
 class UserCreateSerializer(UserCreateSerializer): 
     class Meta(UserCreateSerializer.Meta): 
         model = user
-        fields = ('id', 'email', 'name', 'password', 'region', 'is_superuser')
+        fields = ('id', 'email', 'name', 'password', 'region')
 
 class UserAccountSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,6 +36,19 @@ class TouristicPlaceSerializer(serializers.ModelSerializer):
     class Meta: 
         model =  TouristicPlace
         fields = ['id','name', 'lat', 'long', 'description', 'category', 'nb_visitors', 'created_by', 'geoinfo']
+        
+        # def to_representation(self, instance): # if the instance is an "Event" then add "date_debut" and "date_fin"
+        #     if isinstance(instance, Event):
+        #         return EventSerializer(instance).data
+        #     return super().to_representation(instance)
+
+
+class EventSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model =  Event
+        # fields = ['id','name', 'lat', 'long', 'description','category', 'nb_visitors', 'created_by', 'geoinfo', 'date_debut', 'date_fin']
+        fields = TouristicPlaceSerializer.Meta.fields + ['date_debut', 'date_fin']
+
 
 class CommentSerializer(serializers.ModelSerializer): 
     class Meta: 
