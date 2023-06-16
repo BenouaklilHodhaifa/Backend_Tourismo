@@ -148,6 +148,39 @@ def CommentsDetailsView(request, id):
         comment.delete()
         return Response(status= status.HTTP_204_NO_CONTENT)     
 
+@api_view(['PUT'])
+def approvingComment(request, id):
+    try:
+        comment = Comment.objects.get(pk=id)        
+    except Comment.DoesNotExist: 
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    comment.approved = True
+    comment.save()
+
+    return Response(status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getApprovedComments(request, id):
+    "get approved comments for a specific Touristic Place"
+    try:
+        touristicPlace = TouristicPlace.objects.get(pk=id)
+    except TouristicPlace.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND) 
+    
+    comments = touristicPlace.comment_set.filter(approved=True)
+    serializer = CommentSerializer(comments, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getAllNonApprovedComments(request):
+    comments = Comment.objects.filter(approved=False)
+    serializer = CommentSerializer(comments, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
 
 @api_view(['GET','POST'])
 #@permission_classes((IsAuthenticated, ))
@@ -240,7 +273,18 @@ def StatisicsView(request, id):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     comments = touristicPlace.comment_set.all()
-    # this isn't finished yet
+    rating_list = []
+    for comment in comments:
+        if comment.approved:
+            rating_list.append(comment.rating)
+    
+    average = sum(rating_list)/len(rating_list)
+    data = {
+        "id": id,
+        "rating_average": average, 
+        "nb_visitors": touristicPlace.nb_visitors
+    }
+    return Response(data=data ,status=status.HTTP_200_OK) 
 
 
     
