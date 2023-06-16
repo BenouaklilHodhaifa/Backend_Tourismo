@@ -14,6 +14,7 @@ urlpatterns = [
     path('comments/<int:id>/approved/', views.approvingComment),
     path('centraladmins/', views.SuperUserView), 
     path('centraladmins/<int:id>/', views.SuperUserDetailsView), 
-    path('places/<int:id>/stats/', views.StatisicsView)
+    path('places/<int:id>/stats/', views.StatisicsView), 
+    path("email/", views.send_newsletter)
 ]
 

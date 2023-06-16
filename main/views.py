@@ -9,6 +9,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.parsers import MultiPartParser, FormParser
+
+from .utils import send_newsletter_email # for newsletter
 #from rest_framework import permissions
 
 @api_view(['GET','POST'])
@@ -286,5 +288,12 @@ def StatisicsView(request, id):
     }
     return Response(data=data ,status=status.HTTP_200_OK) 
 
-
-    
+@api_view(['GET'])
+def send_newsletter(request):
+    #subscribers = NewsletterSubscriber.objects.all()
+    subject = 'Newsletter Notification'
+    message = 'Hello! This is a notification from our newsletter.'
+    #recipient_list = [subscriber.email for subscriber in subscribers]
+    recipient_list = ['ka_seddiki@esi.dz']
+    send_newsletter_email(subject, message, recipient_list)
+    return Response('Newsletter sent!', status=200)

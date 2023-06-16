@@ -10,7 +10,7 @@ user = get_user_model()
 class UserCreateSerializer(UserCreateSerializer): 
     class Meta(UserCreateSerializer.Meta): 
         model = user
-        fields = ('id', 'email', 'name', 'password', 'region')
+        fields = ('id', 'email', 'name', 'password', 'region', 'is_superuser')
 
 class UserAccountSerializer(serializers.ModelSerializer):
     class Meta:

@@ -180,3 +180,12 @@ DJOSER = { # authentication
 AUTH_USER_MODEL = 'main.UserAccount'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+# to send NewsLetter Emails
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'john.doe.2023.example@gmail.com'
+EMAIL_HOST_PASSWORD = 'zwtxlzsvztrbvqrf'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'john.doe.2023.example@gmail.com'
