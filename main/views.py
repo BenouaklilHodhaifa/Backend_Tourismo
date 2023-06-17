@@ -74,9 +74,9 @@ def TouristicPlacesView(request):
             serializer.save()
             if serializer.data["category"] == 'event':
                 send_newsletter_region(region=serializer.data["region"], event_name=serializer.data["name"] ,
-                                       date=serializer.data["date_debut"] ,description=serializer.data["decription"] )
+                                       date=serializer.data["date_debut"] ,description=serializer.data["description"] )
                 send_newsletter_ville(ville=serializer.data["ville"], event_name=serializer.data["name"] ,
-                                      date=serializer.data["date_debut"] ,description=serializer.data["decription"])
+                                      date=serializer.data["date_debut"] ,description=serializer.data["description"])
             return Response(serializer.data, status= status.HTTP_201_CREATED)
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -323,18 +323,5 @@ def DeleteSubscriberVille(request, id):
     subscriber.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
-#just for tests
-@api_view(['POST'])
-def sendEmailsRegion(request): 
-    region = request.data["region"]
-    send_newsletter_region(region=region)
-    return Response(status=status.HTTP_200_OK)
-
-#just for tests
-@api_view(['POST'])
-def sendEmailsVille(request): 
-    ville = request.data["ville"]
-    send_newsletter_ville(ville=ville)
-    return Response(status=status.HTTP_200_OK)
 
 

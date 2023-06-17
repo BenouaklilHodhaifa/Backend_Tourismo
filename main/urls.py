@@ -18,9 +18,7 @@ urlpatterns = [
     path('places/<int:id>/stats/', views.StatisicsView), 
     path("newsletter/region/", views.CreateSubscriberRegion), 
     path("newsletter/ville/", views.CreateSubscriberVille), 
-    path("newsletter/region/<int:id>/", views.DeleteSubscriberRegion),
-    path("newsletter/ville/<int:id>/", views.DeleteSubscriberVille), 
-    path('email/region/', views.sendEmailsRegion), #for testing
-    path('email/ville/', views.sendEmailsVille) #for testing
+    path("newsletter/region/<int:id>/delete/", views.DeleteSubscriberRegion),
+    path("newsletter/ville/<int:id>/delete/", views.DeleteSubscriberVille)
 ]
 

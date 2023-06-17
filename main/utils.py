@@ -6,9 +6,21 @@ def send_newsletter_email(subject, message, recipient_list):
 
 
 def send_newsletter_region(region, event_name, date, description):
-    subject = f' Exciting New Event in {region}'
+    subject = f'Exciting New Event in {region}'
 
-    message = 'Hello! This is a notification from our newsletter.'
+    message = f"""Exciting news! We\'ve got an incredible event coming up in your area that we don\'t want you to miss. Check out the details below:\n
+Event: {event_name}
+Date: {date}
+Time: event time
+
+Description:{description}
+Join us for this awesome event and have a blast! Get more info on our website.
+Don't miss out on this amazing opportunity! See you at the event.
+
+Cheers,
+
+Tourismo team
+    """
 
     recipient_list = []
     subscribers = SubscriberRegion.objects.filter(region=region)
@@ -17,8 +29,20 @@ def send_newsletter_region(region, event_name, date, description):
     send_newsletter_email(subject, message, recipient_list)
 
 def send_newsletter_ville(ville, event_name, date, description):
-    subject = f'Newsletter Notification about the city: {ville}'
-    message = 'Hello! This is a notification from our newsletter.'
+    subject = f'Exciting New Event in {ville}'
+    message = f"""Exciting news! We\'ve got an incredible event coming up in your area that we don\'t want you to miss. Check out the details below:\n
+Event: {event_name}
+Date: {date}
+Time: event time
+
+Description:{description}
+Join us for this awesome event and have a blast! Get more info on our website.
+Don't miss out on this amazing opportunity! See you at the event.
+
+Cheers,
+
+Tourismo team
+    """
     recipient_list = []
     subscribers = SubscriberVille.objects.filter(ville=ville)
     for subscriber in subscribers:
