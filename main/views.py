@@ -154,7 +154,7 @@ def CommentsDetailsView(request, id):
         comment.delete()
         return Response(status= status.HTTP_204_NO_CONTENT)     
 
-
+#will be deleted
 @api_view(['GET','POST'])
 #@permission_classes((IsAuthenticated, ))
 def GeoInfoView(request):
