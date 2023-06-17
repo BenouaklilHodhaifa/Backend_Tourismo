@@ -235,7 +235,7 @@ def StatisicsView(request, id):
             rating_list.append(comment.rating)
     
     if len(rating_list) != 0:
-        average = sum(rating_list)/len(rating_list)
+        average = round(sum(rating_list)/len(rating_list),2) 
         data = {
             "id": id,
             "rating_average": average, 
