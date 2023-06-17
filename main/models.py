@@ -108,7 +108,7 @@ class TouristicPlace(models.Model):
     date_fin = models.DateField(null=True) #for the events
     opening_time = models.TimeField(null=True)
     closing_time = models.TimeField(null=True)
-    transport = models.CharField(max_length=20, choices=TRANSPORT_CHOICES, null=True)
+    transport = models.CharField(max_length=20, choices=TRANSPORT_CHOICES, null=True) #Transport
     created_by = models.ForeignKey(UserAccount, related_name="TouristicPlaces", on_delete=models.SET_NULL, null=True)
     region = models.CharField(max_length=50, null=True)
     wilaya = models.CharField( max_length=50, null=True)
