@@ -1,6 +1,9 @@
 from datetime import timedelta
 
 from pathlib import Path
+import os 
+
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +24,7 @@ SECRET_KEY = 'django-insecure-sflfyy@(+63i16m0q()k$xj92le4n)+e^r#p_-hz=_m)mnx(r=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -37,11 +40,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'django_filters',
-    'embed_video'
+    'embed_video', 
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     #'django.middleware.csrf.CsrfViewMiddleware', because DRF do not use csrf authentication (i have to implemente a token based authentication insted)
@@ -87,19 +92,23 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+#     # 'default': {
+#     #     'ENGINE': 'django.db.backends.postgresql',
+#     #     'NAME': 'railway',
+#     #     'USER': 'postgres',
+#     #     'PASSWORD': 'rJ2FsyNVsWnluYCzfGa0',
+#     #     'HOST': 'containers-us-west-180.railway.app',
+#     #     'PORT': '7626',
+#     }
+#  }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'railway',
-    #     'USER': 'postgres',
-    #     'PASSWORD': 'rJ2FsyNVsWnluYCzfGa0',
-    #     'HOST': 'containers-us-west-180.railway.app',
-    #     'PORT': '7626',
-    # }
+    'default': dj_database_url.parse("postgres://tourismo_kqkq_user:gtcazaB93q0AhYK6NvHxM2oXJaSK0CeC@dpg-ci6almp8g3n4q9p3rn30-a.frankfurt-postgres.render.com/tourismo_kqkq")
 }
 
 
@@ -152,8 +161,8 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
    'AUTH_HEADER_TYPES': ('JWT', 'Bearer'),
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=365),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=365),
     'AUTH_TOKEN_CLASSES': (
         'rest_framework_simplejwt.tokens.AccessToken',
     )
@@ -173,3 +182,14 @@ DJOSER = { # authentication
 AUTH_USER_MODEL = 'main.UserAccount'
 MEDIA_URL="/media/"
 MEDIA_ROOT=os.path.join(BASE_DIR, "media")
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+# to send NewsLetter Emails
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'john.doe.2023.example@gmail.com'
+EMAIL_HOST_PASSWORD = 'zwtxlzsvztrbvqrf'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'john.doe.2023.example@gmail.com'

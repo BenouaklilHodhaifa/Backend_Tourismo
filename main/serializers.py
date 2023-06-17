@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Drink, TouristicPlace, GeoInfo, Photo, Comment, Video
+from .models import *
 
 # for authentication 
 from djoser.serializers import UserCreateSerializer
@@ -10,27 +10,32 @@ user = get_user_model()
 class UserCreateSerializer(UserCreateSerializer): 
     class Meta(UserCreateSerializer.Meta): 
         model = user
-        fields = ('id', 'email', 'name', 'password')
+        fields = ('id', 'email', 'name', 'password', 'region')
+
+class UserAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = user
+        fields = ['id', 'email', 'name', 'region', 'is_superuser']
 
 class DrinkSerializer(serializers.ModelSerializer): 
     class Meta: 
         model = Drink 
         fields = ['id', 'name', 'description']
+    
+# class GeoInfoSerializer(serializers.ModelSerializer):
+#     class Meta: 
+#         model =  GeoInfo
+#         fields = ['id', 'wilaya', 'ville', 'region']
+
+
 
 class TouristicPlaceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TouristicPlace
-        fields = ['id', 'name', 'lat', 'long', 'description', 'category', 'nb_visitors', 'daye_debut', 'date_fin', 'opening_time', 'closing_time', 'transport' 'created_by', 'region', 'wilaya', 'ville']
-                                                                                                            # new attributes
-class GeoInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GeoInfo
-        fields = ['id', 'wilaya', 'ville', 'region']
+    class Meta: 
+        model =  TouristicPlace
+        fields = ['id','name', 'lat', 'long', 'description', 'category', 'nb_visitors', 'date_debut', 'date_fin', 'opening_time', 'closing_time', 'transport', 'created_by', 'region', 'wilaya', 'ville']
+        
 
-class PhotoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Photo
-        fields = ['id', 'image', 'touristicPlace']
+
 
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,4 +48,22 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'content', 'approved', 'rating', 'touristicPlace']
 
 
-        
+class PhotoSerializer(serializers.ModelSerializer): 
+    class Meta: 
+        model = Photo
+        fields = ['id', 'image', 'touristicPlace']
+
+class VideoSerializer(serializers.ModelSerializer): 
+    class Meta: 
+        model = Video
+        fields = ['id', 'video', 'touristicPlace']
+
+class SubscriberRegionSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = SubscriberRegion
+        fields = ['id', 'email', 'region']
+
+class SubscriberVilleSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = SubscriberVille
+        fields = ['id', 'email', 'ville']

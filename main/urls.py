@@ -3,9 +3,7 @@ from . import views
 
 urlpatterns = [
     path('places/', views.TouristicPlacesView),
-    path('geoinfo/', views.GeoInfoView), # will be deleted
-    path('geoinfo/<int:id>/', views.GeoInfoDetailsView),
-    path('places/filter/', views.TouristicPlacesFilteringView.as_view()),
+    path('places/filter/', views.TouristicPlacesFitler.as_view()),
     path('places/search/', views.TouristicPlaceSearchView.as_view()),
     path('places/photo/', views.PhotoViewSet.as_view({'post': 'create'})),
     path('places/<touristicPlace>/photo/', views.AllImagesDetailsView.as_view()),
@@ -14,6 +12,16 @@ urlpatterns = [
     path('places/<touristicPlace>/video/', views.AllVideosDetailsView.as_view()),
     path('places/<touristicPlace>/video/<id>/', views.SingleVideoDetailsView.as_view()),
     path('places/<int:id>/', views.TouristicPlaceDetailsView), 
+    path("places/<int:id>/approvedcomments/", views.getApprovedComments),
     path('comments/', views.CommentsView), 
-    path('comments/<int:id>/', views.CommentsDetailsView)
+    path("comments/notapproved/", views.getAllNonApprovedComments),
+    path('comments/<int:id>/', views.CommentsDetailsView), 
+    path('comments/<int:id>/approved/', views.approvingComment),
+    path('centraladmins/', views.SuperUserView), 
+    path('centraladmins/<int:id>/', views.SuperUserDetailsView), 
+    path('places/<int:id>/stats/', views.StatisicsView), 
+    path("newsletter/region/", views.CreateSubscriberRegion), 
+    path("newsletter/ville/", views.CreateSubscriberVille), 
+    path("newsletter/region/<int:id>/delete/", views.DeleteSubscriberRegion),
+    path("newsletter/ville/<int:id>/delete/", views.DeleteSubscriberVille)
 ]

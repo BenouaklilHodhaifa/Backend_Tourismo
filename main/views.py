@@ -1,6 +1,5 @@
-from django.http import JsonResponse
 from .models import Drink
-from .serializers import DrinkSerializer, TouristicPlaceSerializer, GeoInfoSerializer, PhotoSerializer, CommentSerializer, VideoSerializer
+from .serializers import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,57 +10,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.parsers import MultiPartParser, FormParser
+
+from .utils import * # for newsletter
 from .custom_renderers import PNGRenderer
 from rest_framework.views import APIView
 from django.db.models import Q
 from django.db.models import Q
 import json
-
-#from rest_framework import permissions
-
-@api_view(['GET','POST'])
-def DrinkList(request): 
-    if request.method == 'GET':
-        drinks = Drink.objects.all()
-        serializer = DrinkSerializer(drinks, many=True)
-
-        #return JsonResponse({"drinks":serialize.data})
-        return Response(serializer.data, status=status.HTTP_200_OK) #this one is better
-    
-    elif request.method == 'POST': 
-        serializer = DrinkSerializer(data=request.data)
-        
-        if serializer.is_valid(): 
-            serializer.save()
-            return Response(serializer.data, status= status.HTTP_201_CREATED)
-        #return JsonResponse({"error": "check your arguments"}, status= status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
-    
-
-@api_view(['GET','PUT','DELETE'])
-
-def DrinkDetails(request, id):
-    try:
-        drink = Drink.objects.get(pk=id)
-    except Drink.DoesNotExist: 
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = DrinkSerializer(drink)
-        
-        return Response(data= serializer.data, status=status.HTTP_200_OK)
-    
-    elif request.method == 'PUT': 
-        serializer = DrinkSerializer(drink, data=request.data)
-        if serializer.is_valid(): 
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE': 
-        drink.delete()
-        return Response(status= status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET','POST'])
@@ -76,10 +31,13 @@ def TouristicPlacesView(request):
     elif request.method == 'POST':
         serializer = TouristicPlaceSerializer(data=request.data)
 
-        print(request.data)
-
         if serializer.is_valid():
             serializer.save()
+            if serializer.data["category"] == 'event':
+                send_newsletter_region(region=serializer.data["region"], event_name=serializer.data["name"] ,
+                                       date=serializer.data["date_debut"] ,description=serializer.data["description"] )
+                send_newsletter_ville(ville=serializer.data["ville"], event_name=serializer.data["name"] ,
+                                      date=serializer.data["date_debut"] ,description=serializer.data["description"])
             return Response(serializer.data, status= status.HTTP_201_CREATED)
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -94,6 +52,8 @@ def TouristicPlaceDetailsView(request, id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
+        touristicPlace.nb_visitors += 1 # nb_vistors++ for stats
+        touristicPlace.save()
         serializer = TouristicPlaceSerializer(touristicPlace)
         
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -109,9 +69,9 @@ def TouristicPlaceDetailsView(request, id):
     elif request.method == 'DELETE': 
         touristicPlace.delete()
         return Response(status= status.HTTP_204_NO_CONTENT)
+    
 
 @api_view(['POST', 'GET'])
-
 def CommentsView(request): 
     if request.method == 'GET':
         comments = Comment.objects.all()
@@ -154,96 +114,41 @@ def CommentsDetailsView(request, id):
         comment.delete()
         return Response(status= status.HTTP_204_NO_CONTENT)     
 
-#will be deleted
-@api_view(['GET','POST'])
-#@permission_classes((IsAuthenticated, ))
-def GeoInfoView(request):
-    if request.method == 'GET':
-        geoInfo = GeoInfo.objects.all()
-        serializer = GeoInfoSerializer(geoInfo, many=True)
-        
-        return Response(serializer.data, status=status.HTTP_200_OK)       
-
-    if request.method == 'POST':
-        serializer = GeoInfoSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status= status.HTTP_201_CREATED)
-            
-        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET','PUT','DELETE'])
-def GeoInfoDetailsView(request, id):
+@api_view(['PUT'])
+def approvingComment(request, id):
     try:
-        geoinfo = GeoInfo.objects.get(pk=id)        
-    except GeoInfo.DoesNotExist: 
+        comment = Comment.objects.get(pk=id)        
+    except Comment.DoesNotExist: 
         return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = GeoInfoSerializer(geoinfo)
-        
-        return Response(serializer.data, status=status.HTTP_200_OK)
     
-    elif request.method == 'PUT': 
-        serializer = GeoInfoSerializer(geoinfo, data=request.data)
-        if serializer.is_valid(): 
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    comment.approved = True
+    comment.save()
 
-    elif request.method == 'DELETE': 
-        geoinfo.delete()
-        return Response(status= status.HTTP_204_NO_CONTENT)     
+    return Response(status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+def getApprovedComments(request, id):
+    "get approved comments for a specific Touristic Place"
+    try:
+        touristicPlace = TouristicPlace.objects.get(pk=id)
+    except TouristicPlace.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND) 
+    
+    comments = touristicPlace.comment_set.filter(approved=True)
+    serializer = CommentSerializer(comments, many=True)
 
-class TouristicPlacesFilteringView(generics.ListAPIView):
-    serializer_class = TouristicPlaceSerializer
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def get_queryset(self):
-        category = self.request.query_params.get('category')
-        theme = self.request.query_params.get('theme')
-        queryset = TouristicPlace.objects.all()
+@api_view(['GET'])
+def getAllNonApprovedComments(request):
+    comments = Comment.objects.filter(approved=False)
+    serializer = CommentSerializer(comments, many=True)
 
-        if category:
-            queryset = queryset.filter(category=category)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+    
 
-        if theme:
-            if theme == 'history and heritage':
-                queryset = queryset.filter(category__in=['monumant','archaeological site'])
-
-            elif theme == 'arts and culture':
-                queryset = queryset.filter(category__in=['musee','landmark', 'archaeological site'])
-
-            elif theme == 'nature and landscapes':
-                queryset = queryset.filter(category__in=['beach','forest'])
-
-            elif theme == 'spirituality and relegion':
-                queryset = queryset.filter(category__in=['religious site', 'landscape'])
-            
-            elif theme == 'entertainment and leisure':
-                queryset = queryset.filter(category__in=['event'])
-
-            elif theme == 'gardens and green spaces':
-                queryset = queryset.filter(category__in=['garden'])
-            
-            elif theme == 'Markets and shopping':
-                queryset = queryset.filter(category__in=['market'])
-
-            elif theme == 'gastronomy and cooking':
-                queryset = queryset.filter(category__in=['restaurant'])
-
-            elif theme == 'adventures and sports':
-                queryset = queryset.filter(category__in=['beach','forest', 'public space'])
-
-            elif theme == 'education and learning':
-                queryset = queryset.filter(category__in=['musee','event'])
-
-        return queryset
-
-
-class TouristicPlaceSearchView(generics.ListAPIView):
+class TouristicPlacesFitler(ListAPIView):
+    queryset = TouristicPlace.objects.all()
     serializer_class = TouristicPlaceSerializer
 
     def get_queryset(self):
@@ -270,6 +175,134 @@ class PhotoViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save()
+
+
+
+@api_view(['GET', 'POST'])
+def SuperUserView(request):
+    if request.method == 'GET': 
+        users = UserAccount.objects.all()
+        serializer = UserAccountSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    elif request.method == 'POST': 
+        serializer = UserCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(is_superuser=True, region="all")
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def SuperUserDetailsView(request, id): 
+
+    try:
+        superuser = UserAccount.objects.get(pk=id)        
+    except UserAccount.DoesNotExist: 
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET': 
+        serializer = UserAccountSerializer(superuser)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    elif request.method == 'PUT': 
+        serializer = UserAccountSerializer(superuser, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'DELETE': 
+        "Delete any admin"
+        user = UserAccount.objects.get(pk=id) 
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def StatisicsView(request, id): 
+    """GET the statistics about a specific Touristic Place
+    (visitors number and the average appreciation given by users)"""
+    try:
+        touristicPlace = TouristicPlace.objects.get(pk=id)        
+    except TouristicPlace.DoesNotExist: 
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    comments = touristicPlace.comment_set.all()
+    rating_list = []
+    for comment in comments:
+        if comment.approved:
+            rating_list.append(comment.rating)
+    
+    if len(rating_list) != 0:
+        average = sum(rating_list)/len(rating_list)
+        data = {
+            "id": id,
+            "rating_average": average, 
+            "nb_visitors": touristicPlace.nb_visitors
+        }
+        return Response(data=data ,status=status.HTTP_200_OK) 
+    
+    data = {
+        "error": "There is no approved comments for this Touristic Place"
+    }
+
+    return Response(data=data, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+@api_view(['POST', 'GET'])
+def CreateSubscriberRegion(request):
+    if request.method == 'POST': 
+        serializer = SubscriberRegionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'GET': 
+        subscribers = SubscriberRegion.objects.all()
+        serializer = SubscriberRegionSerializer(subscribers, many=True)
+        
+        return Response(serializer.data)
+        
+
+@api_view(['POST', 'GET'])
+def CreateSubscriberVille(request):
+    if request.method == 'POST':
+        serializer = SubscriberVilleSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'GET':
+        subscribers = SubscriberVille.objects.all()
+        serializer = SubscriberVilleSerializer(subscribers, many=True)
+        
+        return Response(serializer.data)
+
+@api_view(['DELETE'])
+def DeleteSubscriberRegion(request, id):
+    try:
+        subscriber = SubscriberRegion.objects.get(pk=id)
+    except SubscriberRegion.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    subscriber.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['DELETE'])
+def DeleteSubscriberVille(request, id):
+    try:
+        subscriber = SubscriberVille.objects.get(pk=id)
+    except SubscriberVille.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    subscriber.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
 
 
 class SingleImageDetailsView(generics.RetrieveAPIView):
