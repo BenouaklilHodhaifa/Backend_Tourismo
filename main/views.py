@@ -264,13 +264,20 @@ def StatisicsView(request, id):
         if comment.approved:
             rating_list.append(comment.rating)
     
-    average = sum(rating_list)/len(rating_list)
+    if len(rating_list) != 0:
+        average = sum(rating_list)/len(rating_list)
+        data = {
+            "id": id,
+            "rating_average": average, 
+            "nb_visitors": touristicPlace.nb_visitors
+        }
+        return Response(data=data ,status=status.HTTP_200_OK) 
+    
     data = {
-        "id": id,
-        "rating_average": average, 
-        "nb_visitors": touristicPlace.nb_visitors
+        "error": "There is no approved comments for this Touristic Place"
     }
-    return Response(data=data ,status=status.HTTP_200_OK) 
+
+    return Response(data=data, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 @api_view(['POST', 'GET'])
 def CreateSubscriberRegion(request):
