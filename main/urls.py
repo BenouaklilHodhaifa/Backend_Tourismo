@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path('places/', views.TouristicPlacesView),
-    path('geoinfo/', views.GeoInfoView),
+    path('geoinfo/', views.GeoInfoView), # will be deleted
     path('geoinfo/<int:id>/', views.GeoInfoDetailsView),
     path('places/filter/', views.TouristicPlacesFilteringView.as_view()),
     path('places/search/', views.TouristicPlaceSearchView.as_view()),
