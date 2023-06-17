@@ -1,36 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager #for the costum user model
-from django.core.validators import MinValueValidator, MaxValueValidator # to validate the attribute "region" in "UserAccount" model
-
-
-class Drink(models.Model): # this is just a test
-    name = models.CharField(max_length=200)
-    description = models.TextField()
+from .validators import file_size
 
 class UserAccountManager(BaseUserManager): 
-    def create_user(self, email, name, password=None): 
+    def create_user(self, email, name, password=None, is_superuser=False, region=None): 
         if not email:
             raise ValueError('user must have an email address')
 
         email = self.normalize_email(email)
         user = self.model(email=email, name=name)
-        user.set_password(password) #hash the password 
+        user.set_password(password) #hash the password
+        user.is_superuser = is_superuser
+        user.region = region 
         user.save()
 
         return user
-    
-    def create_superuser(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('superuser must have an email adresse')
-
-        email = self.normalize_email(email)
-        superuser = self.model(email=email, **extra_fields)
-        superuser.set_password(password)
-        superuser.is_superuser = True
-        superuser.is_staff = True
-        superuser.save()
-
-        return superuser
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin): 
@@ -39,15 +23,10 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    region = models.IntegerField( # every wilaya is a region
-        validators=[
-            MinValueValidator(1),
-            MaxValueValidator(58)
-        ], null=True
-    )
+    region = models.CharField(max_length=50, null=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name']
+    REQUIRED_FIELDS = ['name', 'is_superuser', 'region']
 
     objects = UserAccountManager()
 
@@ -61,16 +40,36 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
-class GeoInfo(models.Model): 
-        wilaya = models.CharField( max_length=50)
-        ville = models.CharField( max_length=50)
-        region = models.CharField(max_length=50)
 
 class TouristicPlace(models.Model): 
-    x= [ # add the rest
+    x= [ 
         ("beach", "beach"), 
+        ("forrest", "forrest"),
         ("museum", "museum"), 
-        ("monumant", "monumant")
+        ("monumant", "monumant"), 
+        ("landmark", "landmark"), 
+        ("public square", "public square"), 
+        ("archaeological site", "archaeological site"), 
+        ("garden", "garden"), 
+        ("relegious site", "relegious site"), 
+        ("market", "market"), 
+        ("restaurant", "restaurant"), 
+        ("event", "event")
+    ]
+
+    TRANSPORT_CHOICES = [
+    ("car", "Car"),
+    ("bus", "Bus"),
+    ("train", "Train"),
+    ("metro", "Metro"),
+    ("walking", "Walking"),
+    ("bicycle", "Bicycle"),
+    ("motorcycle", "Motorcycle"),
+    ("boat", "Boat"),
+    ("ferry", "Ferry"),
+    ("taxi", "Taxi"),
+    ("ride-sharing", "Ride-sharing"),
+    ("helicopter", "Helicopter"),
     ]
 
     name = models.CharField(max_length=60)
@@ -79,8 +78,17 @@ class TouristicPlace(models.Model):
     description = models.TextField()
     category = models.CharField( max_length=30, choices=x)
     nb_visitors =models.IntegerField(default=0) # for statistics
+    date_debut = models.DateField(null=True)
+    date_fin = models.DateField(null=True) #for the events
+    opening_time = models.TimeField(null=True)
+    closing_time = models.TimeField(null=True)
+    transport = models.CharField(max_length=20, choices=TRANSPORT_CHOICES, null=True) # new for Transport
     created_by = models.ForeignKey(UserAccount, related_name="TouristicPlaces", on_delete=models.SET_NULL, null=True)
-    geoinfo = models.ForeignKey(GeoInfo ,on_delete=models.CASCADE, null=True)
+    region = models.CharField(max_length=50, null=True)
+    wilaya = models.CharField( max_length=50, null=True)
+    ville = models.CharField( max_length=50, null=True)
+
+
 
 
 class Comment(models.Model): 
@@ -98,9 +106,16 @@ class Photo(models.Model):
     touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE, null=True)
 
 class Video(models.Model): 
-    video = models.FileField(upload_to="multimedia", null=True, blank=True)
+    video = models.FileField(upload_to="videos/", null=True, blank=True, validators=[file_size])
     touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE, null=True)
 
 
+class SubscriberVille(models.Model): 
+    email = models.EmailField(max_length=254)
+    ville = models.TextField(max_length=50)
+
+class SubscriberRegion(models.Model): 
+    email = models.EmailField(max_length=254)
+    region = models.TextField(max_length=50)
 
     

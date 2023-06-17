@@ -39,11 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'djoser',
-    'django_filters'
+    'django_filters',
+    'embed_video', 
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     #'django.middleware.csrf.CsrfViewMiddleware', because DRF do not use csrf authentication (i have to implemente a token based authentication insted)
@@ -82,6 +85,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 1,
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 
@@ -100,11 +104,11 @@ REST_FRAMEWORK = {
 #     #     'PASSWORD': 'rJ2FsyNVsWnluYCzfGa0',
 #     #     'HOST': 'containers-us-west-180.railway.app',
 #     #     'PORT': '7626',
-#     # }
-# }
+#     }
+#  }
 
 DATABASES = {
-    'default': dj_database_url.parse("postgres://tourismo_hg7r_user:QGyO53NvwvKesVyPdPtNQEqEQyMAQckM@dpg-ci5h58lph6eh6mrlh3l0-a.frankfurt-postgres.render.com/tourismo_hg7r")
+    'default': dj_database_url.parse("postgres://tourismo_kqkq_user:gtcazaB93q0AhYK6NvHxM2oXJaSK0CeC@dpg-ci6almp8g3n4q9p3rn30-a.frankfurt-postgres.render.com/tourismo_kqkq")
 }
 
 
@@ -176,3 +180,16 @@ DJOSER = { # authentication
 }
 
 AUTH_USER_MODEL = 'main.UserAccount'
+MEDIA_URL="/media/"
+MEDIA_ROOT=os.path.join(BASE_DIR, "media")
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+# to send NewsLetter Emails
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'john.doe.2023.example@gmail.com'
+EMAIL_HOST_PASSWORD = 'zwtxlzsvztrbvqrf'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'john.doe.2023.example@gmail.com'
