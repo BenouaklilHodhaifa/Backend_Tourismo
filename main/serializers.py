@@ -56,3 +56,13 @@ class VideoSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Video
         fields = ['id', 'video', 'touristicPlace']
+
+class SubscriberRegionSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = SubscriberRegion
+        fields = ['id', 'email', 'region']
+
+class SubscriberVilleSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = SubscriberVille
+        fields = ['id', 'email', 'ville']

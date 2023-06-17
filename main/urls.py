@@ -16,6 +16,11 @@ urlpatterns = [
     path('centraladmins/', views.SuperUserView), 
     path('centraladmins/<int:id>/', views.SuperUserDetailsView), 
     path('places/<int:id>/stats/', views.StatisicsView), 
-    path("email/", views.send_newsletter)
+    path("newsletter/region/", views.CreateSubscriberRegion), 
+    path("newsletter/ville/", views.CreateSubscriberVille), 
+    path("newsletter/region/<int:id>/", views.DeleteSubscriberRegion),
+    path("newsletter/ville/<int:id>/", views.DeleteSubscriberVille), 
+    path('email/region/', views.sendEmailsRegion), #for testing
+    path('email/ville/', views.sendEmailsVille) #for testing
 ]
 

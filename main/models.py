@@ -97,7 +97,12 @@ class Video(models.Model):
     touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE, null=True)
 
 
-#class Subscriber(models.Model)
+class SubscriberVille(models.Model): 
+    email = models.EmailField(max_length=254)
+    ville = models.TextField(max_length=50)
 
+class SubscriberRegion(models.Model): 
+    email = models.EmailField(max_length=254)
+    region = models.TextField(max_length=50)
 
     

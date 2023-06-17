@@ -10,7 +10,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from .utils import send_newsletter_email # for newsletter
+from .utils import * # for newsletter
 #from rest_framework import permissions
 
 @api_view(['GET','POST'])
@@ -70,10 +70,13 @@ def TouristicPlacesView(request):
     elif request.method == 'POST':
         serializer = TouristicPlaceSerializer(data=request.data)
 
-        print(request.data)
-
         if serializer.is_valid():
             serializer.save()
+            if serializer.data["category"] == 'event':
+                send_newsletter_region(region=serializer.data["region"], event_name=serializer.data["name"] ,
+                                       date=serializer.data["date_debut"] ,description=serializer.data["decription"] )
+                send_newsletter_ville(ville=serializer.data["ville"], event_name=serializer.data["name"] ,
+                                      date=serializer.data["date_debut"] ,description=serializer.data["decription"])
             return Response(serializer.data, status= status.HTTP_201_CREATED)
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -183,50 +186,6 @@ def getAllNonApprovedComments(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
     
 
-
-# @api_view(['GET','POST'])
-# #@permission_classes((IsAuthenticated, ))
-# def GeoInfoView(request):
-#     if request.method == 'GET':
-#         geoInfo = GeoInfo.objects.all()
-#         serializer = GeoInfoSerializer(geoInfo, many=True)
-
-#         return Response(serializer.data, status=status.HTTP_200_OK)       
-
-#     if request.method == 'POST':
-#         serializer = GeoInfoSerializer(data=request.data)
-
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status= status.HTTP_201_CREATED)
-            
-#         return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
-
-# @api_view(['GET', 'PUT', 'DELETE'])
-# def GeoInfoDetailsView(request, id): 
-#     try: 
-#         geoinfo = GeoInfo.objects.get(pk=id)
-#     except GeoInfo.DoesNotExist: 
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-    
-#     if request.method == 'GET':
-#         serializer = GeoInfoSerializer(geoinfo)
-        
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-#     elif request.method == 'PUT': 
-#         serializer = GeoInfoSerializer(geoinfo, data=request.data)
-#         if serializer.is_valid(): 
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-        
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#     elif request.method == 'DELETE': 
-#         geoinfo.delete()
-#         return Response(status= status.HTTP_204_NO_CONTENT)
-
-
 class TouristicPlacesFitler(ListAPIView):
     queryset = TouristicPlace.objects.all()
     serializer_class = TouristicPlaceSerializer
@@ -313,13 +272,69 @@ def StatisicsView(request, id):
     }
     return Response(data=data ,status=status.HTTP_200_OK) 
 
-@api_view(['GET'])
-def send_newsletter(request):
-    #subscribers = NewsletterSubscriber.objects.all()
-    subject = 'Newsletter Notification'
-    message = 'Hello! This is a notification from our newsletter.'
-    #recipient_list = [subscriber.email for subscriber in subscribers]
-    recipient_list = ['ka_seddiki@esi.dz']
-    send_newsletter_email(subject, message, recipient_list)
-    return Response('Newsletter sent!', status=200)
+@api_view(['POST', 'GET'])
+def CreateSubscriberRegion(request):
+    if request.method == 'POST': 
+        serializer = SubscriberRegionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'GET': 
+        subscribers = SubscriberRegion.objects.all()
+        serializer = SubscriberRegionSerializer(subscribers, many=True)
+        
+        return Response(serializer.data)
+        
+
+@api_view(['POST', 'GET'])
+def CreateSubscriberVille(request):
+    if request.method == 'POST':
+        serializer = SubscriberVilleSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'GET':
+        subscribers = SubscriberVille.objects.all()
+        serializer = SubscriberVilleSerializer(subscribers, many=True)
+        
+        return Response(serializer.data)
+
+@api_view(['DELETE'])
+def DeleteSubscriberRegion(request, id):
+    try:
+        subscriber = SubscriberRegion.objects.get(pk=id)
+    except SubscriberRegion.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    subscriber.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['DELETE'])
+def DeleteSubscriberVille(request, id):
+    try:
+        subscriber = SubscriberVille.objects.get(pk=id)
+    except SubscriberVille.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    subscriber.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+#just for tests
+@api_view(['POST'])
+def sendEmailsRegion(request): 
+    region = request.data["region"]
+    send_newsletter_region(region=region)
+    return Response(status=status.HTTP_200_OK)
+
+#just for tests
+@api_view(['POST'])
+def sendEmailsVille(request): 
+    ville = request.data["ville"]
+    send_newsletter_ville(ville=ville)
+    return Response(status=status.HTTP_200_OK)
+
 
