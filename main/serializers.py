@@ -21,7 +21,7 @@ class TouristicPlaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = TouristicPlace
         fields = ['id', 'name', 'lat', 'long', 'description', 'category', 'nb_visitors', 'daye_debut', 'date_fin', 'opening_time', 'closing_time', 'transport' 'created_by', 'region', 'wilaya', 'ville']
-
+                                                                                                            # new attributes
 class GeoInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeoInfo
