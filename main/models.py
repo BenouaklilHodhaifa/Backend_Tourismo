@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.core.validators import MinValueValidator, MaxValueValidator # to validate the attribute "region" in "UserAccount" model
 from .validators import file_size
 
-
 class Drink(models.Model): # this is just a test
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -80,7 +79,23 @@ class TouristicPlace(models.Model):
         ("relegious site", "relegious site"), 
         ("market", "market"), 
         ("restaurant", "restaurant"), 
-        ("event", "event")
+        ("event", "event"),
+        ("monumant", "monumant")
+    ]
+
+    TRANSPORT_CHOICES = [
+    ("car", "Car"),
+    ("bus", "Bus"),
+    ("train", "Train"),
+    ("metro", "Metro"),
+    ("walking", "Walking"),
+    ("bicycle", "Bicycle"),
+    ("motorcycle", "Motorcycle"),
+    ("boat", "Boat"),
+    ("ferry", "Ferry"),
+    ("taxi", "Taxi"),
+    ("ride-sharing", "Ride-sharing"),
+    ("helicopter", "Helicopter"),
     ]
 
     name = models.CharField(max_length=60)
@@ -91,6 +106,9 @@ class TouristicPlace(models.Model):
     nb_visitors =models.IntegerField(default=0) # for statistics
     date_debut = models.DateField(null=True)
     date_fin = models.DateField(null=True) #for the events
+    opening_time = models.TimeField(null=True)
+    closing_time = models.TimeField(null=True)
+    transport = models.CharField(max_length=20, choices=TRANSPORT_CHOICES, null=True)
     created_by = models.ForeignKey(UserAccount, related_name="TouristicPlaces", on_delete=models.SET_NULL, null=True)
     region = models.CharField(max_length=50, null=True)
     wilaya = models.CharField( max_length=50, null=True)
@@ -113,3 +131,6 @@ class Photo(models.Model):
 class Video(models.Model): 
     video = models.FileField(upload_to="videos/", null=True, blank=True, validators=[file_size])
     touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE, null=True)
+
+
+    

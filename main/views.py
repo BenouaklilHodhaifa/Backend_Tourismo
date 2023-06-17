@@ -348,4 +348,3 @@ class AllVideosDetailsView(generics.RetrieveAPIView):
             i+=1
         json_response = tab
         return Response(json_response, status=status.HTTP_200_OK)
-
