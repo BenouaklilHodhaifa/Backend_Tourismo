@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager #for the costum user model
+from django.core.validators import MinValueValidator, MaxValueValidator # to validate the attribute "region" in "UserAccount" model
+from .validators import file_size
 
 
 class Drink(models.Model): # this is just a test
@@ -38,6 +40,12 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    region = models.IntegerField( # every wilaya is a region
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(58)
+        ], null=True
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name']
@@ -60,10 +68,19 @@ class GeoInfo(models.Model):
         region = models.CharField(max_length=50)
 
 class TouristicPlace(models.Model): 
-    x= [ # add the rest
+    x= [ 
         ("beach", "beach"), 
+        ("forrest", "forrest"),
         ("museum", "museum"), 
-        ("monument", "monument")
+        ("monumant", "monumant"), 
+        ("landmark", "landmark"), 
+        ("public square", "public square"), 
+        ("archaeological site", "archaeological site"), 
+        ("garden", "garden"), 
+        ("relegious site", "relegious site"), 
+        ("market", "market"), 
+        ("restaurant", "restaurant"), 
+        ("event", "event")
     ]
 
     name = models.CharField(max_length=60)
@@ -72,27 +89,27 @@ class TouristicPlace(models.Model):
     description = models.TextField()
     category = models.CharField( max_length=30, choices=x)
     nb_visitors =models.IntegerField(default=0) # for statistics
+    date_debut = models.DateField(null=True)
+    date_fin = models.DateField(null=True) #for the events
     created_by = models.ForeignKey(UserAccount, related_name="TouristicPlaces", on_delete=models.SET_NULL, null=True)
-    geoinfo = models.ForeignKey(GeoInfo ,on_delete=models.CASCADE, null=True)
+    region = models.CharField(max_length=50, null=True)
+    wilaya = models.CharField( max_length=50, null=True)
+    ville = models.CharField( max_length=50, null=True)
 
-class comment(models.Model): 
+class Comment(models.Model): 
     name = models.CharField(max_length=50)
     content = models.TextField()
     approved = models.BooleanField(default=False)
     rating = models.IntegerField()
-    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
+    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE, null=True)
 
 def upload_to(instance, filename):
     return 'images/{filename}'.format(filename=filename)
 
-class Photo(models.Model): 
+class Photo(models.Model):
     image = models.FileField(upload_to="multimedia", null=True, blank=True)
-    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
+    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE, null=True)
 
 class Video(models.Model): 
-    video = models.FileField(upload_to="multimedia", null=True, blank=True)
-    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE)
-
-
-
-    
+    video = models.FileField(upload_to="videos/", null=True, blank=True, validators=[file_size])
+    touristicPlace = models.ForeignKey(TouristicPlace, on_delete=models.CASCADE, null=True)
