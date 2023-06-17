@@ -1,4 +1,3 @@
-from .models import Drink
 from .serializers import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -10,6 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.generics import ListAPIView
 
 from .utils import * # for newsletter
 from .custom_renderers import PNGRenderer
@@ -381,3 +381,22 @@ class AllVideosDetailsView(generics.RetrieveAPIView):
             i+=1
         json_response = tab
         return Response(json_response, status=status.HTTP_200_OK)
+    
+class TouristicPlaceSearchView(generics.ListAPIView):
+    serializer_class = TouristicPlaceSerializer
+
+    def get_queryset(self):
+        search_query = self.request.query_params.get('query')
+        queryset = TouristicPlace.objects.all()
+
+        if search_query:
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) |
+                Q(category__icontains=search_query) |
+                Q(description__icontains=search_query) |
+                Q(region__icontains=search_query) |
+                Q(wilaya__icontains=search_query) |
+                Q(ville__icontains=search_query)
+            )
+            
+        return queryset

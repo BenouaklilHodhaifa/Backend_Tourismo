@@ -17,17 +17,6 @@ class UserAccountSerializer(serializers.ModelSerializer):
         model = user
         fields = ['id', 'email', 'name', 'region', 'is_superuser']
 
-class DrinkSerializer(serializers.ModelSerializer): 
-    class Meta: 
-        model = Drink 
-        fields = ['id', 'name', 'description']
-    
-# class GeoInfoSerializer(serializers.ModelSerializer):
-#     class Meta: 
-#         model =  GeoInfo
-#         fields = ['id', 'wilaya', 'ville', 'region']
-
-
 
 class TouristicPlaceSerializer(serializers.ModelSerializer):
     class Meta: 

@@ -1,11 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager #for the costum user model
-from django.core.validators import MinValueValidator, MaxValueValidator # to validate the attribute "region" in "UserAccount" model
 from .validators import file_size
-
-class Drink(models.Model): # this is just a test
-    name = models.CharField(max_length=200)
-    description = models.TextField()
 
 class UserAccountManager(BaseUserManager): 
     def create_user(self, email, name, password=None, is_superuser=False, region=None): 
