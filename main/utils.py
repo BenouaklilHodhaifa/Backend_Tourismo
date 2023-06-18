@@ -2,7 +2,10 @@ from django.core.mail import send_mail
 from .models import SubscriberRegion, SubscriberVille
 
 def send_newsletter_email(subject, message, recipient_list):
-    send_mail(subject, message, 'john.doe.2023.example@gmail.com', recipient_list, fail_silently=False)
+    send_mail(subject, message,
+            #    'john.doe.2023.example@gmail.com', 
+            'tourismoapp@gmail.com',
+               recipient_list, fail_silently=False)
 
 
 def send_newsletter_region(region, event_name, date, description):
