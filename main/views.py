@@ -370,9 +370,9 @@ class AllImagesDetailsView(generics.RetrieveAPIView):
         serializer = PhotoSerializer(queryset, many=True)
         print(serializer.data)
         tab = []
-        json_data = {}
         i = 0
         for obj in serializer.data:
+            json_data = {}
             for key, value in obj.items():
                 json_data[key] = value
             tab.append(json_data)
