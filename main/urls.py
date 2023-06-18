@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path('places/', views.TouristicPlacesView),
-    path('places/filter/', views.TouristicPlacesFitler.as_view()),
+    path('places/filter/', views.TouristicPlacesFilteringView.as_view()),
     path('places/search/', views.TouristicPlaceSearchView.as_view()),
     path('places/photo/', views.PhotoViewSet.as_view({'post': 'create'})),
     path('places/<touristicPlace>/photo/', views.AllImagesDetailsView.as_view()),
