@@ -147,8 +147,52 @@ def getAllNonApprovedComments(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
     
 
-class TouristicPlacesFitler(ListAPIView):
-    queryset = TouristicPlace.objects.all()
+class TouristicPlacesFilteringView(generics.ListAPIView):
+    serializer_class = TouristicPlaceSerializer
+
+    def get_queryset(self):
+        category = self.request.query_params.get('category')
+        theme = self.request.query_params.get('theme')
+        queryset = TouristicPlace.objects.all()
+
+        if category:
+            queryset = queryset.filter(category=category)
+
+        if theme:
+            if theme == 'history and heritage':
+                queryset = queryset.filter(category__in=['monumant','archaeological site'])
+
+            elif theme == 'arts and culture':
+                queryset = queryset.filter(category__in=['musee','landmark', 'archaeological site'])
+
+            elif theme == 'nature and landscapes':
+                queryset = queryset.filter(category__in=['beach','forest'])
+
+            elif theme == 'spirituality and relegion':
+                queryset = queryset.filter(category__in=['religious site', 'landscape'])
+            
+            elif theme == 'entertainment and leisure':
+                queryset = queryset.filter(category__in=['event'])
+
+            elif theme == 'gardens and green spaces':
+                queryset = queryset.filter(category__in=['garden'])
+            
+            elif theme == 'Markets and shopping':
+                queryset = queryset.filter(category__in=['market'])
+
+            elif theme == 'gastronomy and cooking':
+                queryset = queryset.filter(category__in=['restaurant'])
+
+            elif theme == 'adventures and sports':
+                queryset = queryset.filter(category__in=['beach','forest', 'public space'])
+
+            elif theme == 'education and learning':
+                queryset = queryset.filter(category__in=['musee','event'])
+
+        return queryset
+
+
+class TouristicPlaceSearchView(generics.ListAPIView):
     serializer_class = TouristicPlaceSerializer
 
     def get_queryset(self):
